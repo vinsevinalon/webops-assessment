@@ -502,12 +502,6 @@
   letter-spacing: 0.07rem;
 }
 
-@media screen and (max-width: 749px) {
-  .card__heading a::after {
-    z-index: -1;
-  }
-}
-
 .card-article-info {
   margin-top: 1rem;
 }

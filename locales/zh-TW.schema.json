@@ -278,6 +278,16 @@
         "show_cart_note": {
           "label": "購物車備註"
         },
+        "quick_add_desktop_behavior": {
+          "label": "Quick add on desktop and tablet",
+          "info": "Mobile continues to use the popup.",
+          "existing": {
+            "label": "Existing popup"
+          },
+          "drawer": {
+            "label": "Drawer"
+          }
+        },
         "cart_drawer": {
           "header": "購物車導覽匣",
           "collection": {

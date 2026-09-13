@@ -401,6 +401,48 @@ quick-add-bulk .quantity__input {
   flex-grow: 0;
 }
 
+@media screen and (min-width: 750px) {
+  .quick-add-modal--desktop-drawer .quick-add-modal__content {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: auto;
+    transform: translateX(100%);
+    margin: 0;
+    width: min(48rem, 100%);
+    max-width: none;
+    max-height: none;
+    height: 100%;
+    transition: transform var(--duration-default) ease;
+  }
+
+  .quick-add-modal--desktop-drawer[open] .quick-add-modal__content {
+    transform: translateX(0);
+  }
+
+  .quick-add-modal--desktop-drawer .quick-add-modal__content-info {
+    display: block;
+  }
+
+  .quick-add-modal--desktop-drawer .product:not(.product--no-media) .product__media-wrapper,
+  .quick-add-modal--desktop-drawer .product:not(.product--no-media) .product__info-wrapper {
+    max-width: 100%;
+    width: 100%;
+    padding-left: 0;
+  }
+
+  .quick-add-modal--desktop-drawer .product-form__submit-price:not([hidden]) {
+    display: inline !important;
+    margin-left: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick-add-modal--desktop-drawer .quick-add-modal__content {
+    transition: none;
+  }
+}
+
 .quantity__input-disabled {
   pointer-events: none;
 }

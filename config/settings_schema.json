@@ -1435,6 +1435,23 @@
         "default": false
       },
       {
+        "type": "select",
+        "id": "quick_add_desktop_behavior",
+        "options": [
+          {
+            "value": "existing",
+            "label": "t:settings_schema.cart.settings.quick_add_desktop_behavior.existing.label"
+          },
+          {
+            "value": "drawer",
+            "label": "t:settings_schema.cart.settings.quick_add_desktop_behavior.drawer.label"
+          }
+        ],
+        "default": "existing",
+        "label": "t:settings_schema.cart.settings.quick_add_desktop_behavior.label",
+        "info": "t:settings_schema.cart.settings.quick_add_desktop_behavior.info"
+      },
+      {
         "type": "header",
         "content": "t:settings_schema.cart.settings.cart_drawer.header"
       },

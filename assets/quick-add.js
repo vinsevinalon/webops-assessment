@@ -12,6 +12,7 @@ if (!customElements.get('quick-add-modal')) {
       }
 
       hide(preventFocus = false) {
+        this.cancelRequest();
         const cartNotification = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
         if (cartNotification) cartNotification.setActiveElement(this.openedBy);
         this.modalContent.innerHTML = '';
@@ -21,17 +22,30 @@ if (!customElements.get('quick-add-modal')) {
       }
 
       show(opener) {
+        document.querySelectorAll('quick-add-modal').forEach((modal) => {
+          if (modal !== this) modal.cancelRequest?.();
+        });
+        this.cancelRequest();
+        this.abortController = new AbortController();
+        const abortController = this.abortController;
+        this.loadingOpener = opener;
         opener.setAttribute('aria-disabled', true);
         opener.classList.add('loading');
         opener.querySelector('.loading__spinner').classList.remove('hidden');
 
         const productUrl = opener.getAttribute('data-product-url');
 
-        fetch(productUrl)
-          .then((response) => response.text())
+        fetch(productUrl, { signal: abortController.signal })
+          .then((response) => {
+            if (!response.ok) throw new Error('Quick add could not load this product.');
+            return response.text();
+          })
           .then((responseText) => {
+            if (abortController.signal.aborted || this.abortController !== abortController) return;
             const responseHTML = new DOMParser().parseFromString(responseText, 'text/html');
             const productElement = responseHTML.querySelector('product-info');
+
+            if (!productElement) throw new Error('Quick add could not load this product.');
 
             this.preprocessHTML(productElement);
             HTMLUpdateUtility.setInnerHTML(this.modalContent, productElement.outerHTML);
@@ -45,11 +59,39 @@ if (!customElements.get('quick-add-modal')) {
 
             super.show(opener);
           })
+          .catch((error) => {
+            if (error.name === 'AbortError' || abortController.signal.aborted || this.abortController !== abortController) return;
+            this.showLoadError(productUrl);
+            super.show(opener);
+          })
           .finally(() => {
-            opener.removeAttribute('aria-disabled');
-            opener.classList.remove('loading');
-            opener.querySelector('.loading__spinner').classList.add('hidden');
+            if (this.abortController === abortController && this.loadingOpener === opener) this.resetLoadingState();
           });
+      }
+
+      cancelRequest() {
+        this.abortController?.abort();
+        this.abortController = null;
+        this.resetLoadingState();
+      }
+
+      resetLoadingState() {
+        if (!this.loadingOpener) return;
+        this.loadingOpener.removeAttribute('aria-disabled');
+        this.loadingOpener.classList.remove('loading');
+        this.loadingOpener.querySelector('.loading__spinner')?.classList.add('hidden');
+        this.loadingOpener = null;
+      }
+
+      showLoadError(productUrl) {
+        this.modalContent.replaceChildren();
+        const message = document.createElement('p');
+        message.setAttribute('role', 'alert');
+        message.textContent = this.dataset.errorMessage;
+        const link = document.createElement('a');
+        link.href = productUrl;
+        link.textContent = this.dataset.viewDetailsLabel;
+        this.modalContent.append(message, link);
       }
 
       preprocessHTML(productElement) {

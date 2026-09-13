@@ -264,6 +264,16 @@
         "show_cart_note": {
           "label": "Sepet notu"
         },
+        "quick_add_desktop_behavior": {
+          "label": "Quick add on desktop and tablet",
+          "info": "Mobile continues to use the popup.",
+          "existing": {
+            "label": "Existing popup"
+          },
+          "drawer": {
+            "label": "Drawer"
+          }
+        },
         "cart_drawer": {
           "header": "Sepet çekmecesi",
           "collection": {

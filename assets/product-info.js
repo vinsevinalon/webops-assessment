@@ -183,6 +183,7 @@ if (!customElements.get('product-info')) {
 
           this.pickupAvailability?.update(variant);
           this.updateOptionValues(html);
+          this.updateVariantInputs(variant?.id);
           this.updateURL(productUrl, variant?.id);
 
           if (!variant) {
@@ -206,6 +207,12 @@ if (!customElements.get('product-info')) {
           updateSourceFromDestination('Inventory', ({ innerText }) => innerText === '');
           updateSourceFromDestination('Volume');
           updateSourceFromDestination('Price-Per-Item', ({ classList }) => classList.contains('hidden'));
+
+          const sourceSubmitPrice = html.querySelector('[data-product-submit-price]');
+          const destinationSubmitPrice = this.querySelector('[data-product-submit-price]');
+          if (sourceSubmitPrice && destinationSubmitPrice) {
+            destinationSubmitPrice.textContent = sourceSubmitPrice.textContent;
+          }
 
           this.updateQuantityRules(this.sectionId, html);
           this.querySelector(`#Quantity-Rules-${this.dataset.section}`)?.classList.remove('hidden');
@@ -247,6 +254,7 @@ if (!customElements.get('product-info')) {
 
       setUnavailable() {
         this.productForm?.toggleSubmitButton(true, window.variantStrings.unavailable);
+        this.querySelector('[data-product-submit-price]')?.setAttribute('hidden', '');
 
         const selectors = ['price', 'Inventory', 'Sku', 'Price-Per-Item', 'Volume-Note', 'Volume', 'Quantity-Rules']
           .map((id) => `#${id}-${this.dataset.section}`)

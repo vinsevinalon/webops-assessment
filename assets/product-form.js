@@ -19,6 +19,9 @@ if (!customElements.get('product-form')) {
 
       onSubmitHandler(evt) {
         evt.preventDefault();
+        if (this.isSubmitting || this.submitButton.disabled || this.submitButton.getAttribute('aria-disabled') === 'true') return;
+
+        this.isSubmitting = true;
         this.handleErrorMessage();
 
         this.submitButton.setAttribute('aria-disabled', true);
@@ -105,10 +108,12 @@ if (!customElements.get('product-form')) {
           })
           .catch((e) => {
             console.error(e);
+            this.handleErrorMessage(window.cartStrings.error);
             this.dispatchCartErrorEvent(e.message || 'Network error', 'SERVICE_UNAVAILABLE');
             linesUpdateDeferred?.reject(e);
           })
           .finally(() => {
+            this.isSubmitting = false;
             this.submitButton.classList.remove('loading');
             if (this.cart && this.cart.classList.contains('is-empty')) this.cart.classList.remove('is-empty');
             if (!this.error) this.submitButton.removeAttribute('aria-disabled');
@@ -134,6 +139,8 @@ if (!customElements.get('product-form')) {
       }
 
       toggleSubmitButton(disable = true, text) {
+        const submitPrice = this.submitButton.querySelector('[data-product-submit-price]');
+        submitPrice?.toggleAttribute('hidden', disable);
         if (disable) {
           this.submitButton.setAttribute('disabled', 'disabled');
           if (text) this.submitButtonText.textContent = text;
