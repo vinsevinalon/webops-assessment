@@ -5,10 +5,19 @@ if (!customElements.get('quick-add-modal')) {
       constructor() {
         super();
         this.modalContent = this.querySelector('[id^="QuickAddInfo-"]');
+        this.handleKeydown = this.handleKeydown.bind(this);
+        this.addEventListener('keydown', this.handleKeydown);
 
         this.addEventListener('product-info:loaded', ({ target }) => {
           target.addPreProcessCallback(this.preprocessHTML.bind(this));
         });
+      }
+
+      handleKeydown(event) {
+        if (event.key !== 'Escape' && event.code !== 'Escape') return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.hide();
       }
 
       hide(preventFocus = false) {

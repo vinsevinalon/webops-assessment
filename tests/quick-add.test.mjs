@@ -151,6 +151,31 @@ test('closing a quick-add modal aborts the request and cannot reopen it', async 
   assert.equal(opener.classList.contains('loading'), false);
 });
 
+test('quick-add closes for an Escape keydown even when code is unavailable', () => {
+  const { modal } = makeQuickAddHarness(sourceUnderTest('assets/quick-add.js'));
+  let hides = 0;
+  let prevented = 0;
+  let stopped = 0;
+  modal.hide = () => { hides += 1; };
+
+  modal.handleKeydown({
+    key: 'Escape',
+    code: '',
+    preventDefault: () => { prevented += 1; },
+    stopPropagation: () => { stopped += 1; },
+  });
+  modal.handleKeydown({
+    key: 'Enter',
+    code: 'Enter',
+    preventDefault: () => { prevented += 1; },
+    stopPropagation: () => { stopped += 1; },
+  });
+
+  assert.equal(hides, 1);
+  assert.equal(prevented, 1);
+  assert.equal(stopped, 1);
+});
+
 function makeProductInfo(source) {
   return loadElement(source, 'product-info', {
     AbortController, Event: class Event { constructor() {} }, window: { variantStrings: { soldOut: 'Sold out' } },
